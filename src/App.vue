@@ -1,12 +1,54 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <Nav @logoutUser="logout"/>
     <router-view/>
+    <!-- <Footer/> -->
   </div>
 </template>
+
+<script>
+import Nav from './components/Layouts/Nav.vue'
+// import Footer from './components/Layouts/Footer.vue'
+export default {
+  components:{
+    Nav,
+    // Footer
+  },
+  mounted()
+  {
+  },
+  methods:
+  {
+    logout()
+        {
+            const token = localStorage.getItem('api_token')
+            this.axios.post('http://127.0.0.1:8000/api/v1/logout', null,{
+              headers:{
+                'Accept' : 'application/json',
+                'Authorization' : 'Bearer '+ token
+              }
+            })
+            .then(response => {
+                if(!response.data.status)
+                {
+                    alert(response.data.message)
+                    return;
+                }
+                else
+                {
+                    alert(response.data.message)
+                    localStorage.removeItem('api_token')
+                    localStorage.removeItem('user_id')
+                    window.location.href = window.location.origin
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }
+  }
+}
+</script>
 
 <style>
 #app {
